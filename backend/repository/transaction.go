@@ -15,14 +15,14 @@ var (
 	ErrInvalidTransactionStatus = errors.New("invalid transaction status")
 )
 
-// TransactionSummary represents aggregated metrics over transactions.
+// TransactionSummary represents aggregated metrics over transactions in USD cents.
 type TransactionSummary struct {
-	TotalVolumePaise       int64   `json:"total_volume_paise"`
-	TotalVolumeFormatted   string  `json:"total_volume_formatted"`
-	TotalCount             int     `json:"total_count"`
-	PendingCount           int     `json:"pending_count"`
-	SuccessCount           int     `json:"success_count"`
-	FailedCount            int     `json:"failed_count"`
+	TotalVolumeCents      int64   `json:"total_volume_cents"`
+	TotalVolumeFormatted  string  `json:"total_volume_formatted"`
+	TotalCount            int     `json:"total_count"`
+	PendingCount          int     `json:"pending_count"`
+	SuccessCount          int     `json:"success_count"`
+	FailedCount           int     `json:"failed_count"`
 	SuccessRatePercentage float64 `json:"success_rate_percentage"`
 }
 
@@ -39,7 +39,7 @@ type MemoryTransactionRepository struct {
 	transactions []models.Transaction
 }
 
-// NewMemoryTransactionRepository initializes the in-memory repository pre-seeded with realistic mock fintech data.
+// NewMemoryTransactionRepository initializes the in-memory repository pre-seeded with realistic mock fintech data in USD.
 func NewMemoryTransactionRepository() *MemoryTransactionRepository {
 	now := time.Now().UTC()
 
@@ -47,112 +47,112 @@ func NewMemoryTransactionRepository() *MemoryTransactionRepository {
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000001",
 			UserID:          "usr_fin_9821",
-			AmountPaise:     125050, // ₹1,250.50
-			Currency:        "INR",
+			AmountCents:     12500, // $125.00
+			Currency:        "USD",
 			Status:          models.StatusPending,
-			ReferenceID:     "UPI/428910293812/PAY_MERCHANT",
+			ReferenceID:     "ACH/428910293812/PAY_MERCHANT",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-2 * time.Hour),
-			FormattedAmount: models.FormatRupees(125050),
+			FormattedAmount: models.FormatUSD(12500),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000002",
 			UserID:          "usr_fin_4412",
-			AmountPaise:     5000000, // ₹50,000.00
-			Currency:        "INR",
+			AmountCents:     450000, // $4,500.00
+			Currency:        "USD",
 			Status:          models.StatusSuccess,
-			ReferenceID:     "NEFT/N90281203810/SALARY_CREDIT",
+			ReferenceID:     "WIRE/W90281203810/SALARY_CREDIT",
 			Type:            models.TypeCredit,
 			CreatedAt:       now.Add(-4 * time.Hour),
-			FormattedAmount: models.FormatRupees(5000000),
+			FormattedAmount: models.FormatUSD(450000),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000003",
 			UserID:          "usr_fin_1092",
-			AmountPaise:     349900, // ₹3,499.00
-			Currency:        "INR",
+			AmountCents:     125000, // $1,250.00
+			Currency:        "USD",
 			Status:          models.StatusPending,
-			ReferenceID:     "PG/TXN_881920384910",
+			ReferenceID:     "STRIPE/TXN_881920384910",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-30 * time.Minute),
-			FormattedAmount: models.FormatRupees(349900),
+			FormattedAmount: models.FormatUSD(125000),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000004",
 			UserID:          "usr_fin_3389",
-			AmountPaise:     75000, // ₹750.00
-			Currency:        "INR",
+			AmountCents:     7500, // $75.00
+			Currency:        "USD",
 			Status:          models.StatusFailed,
-			ReferenceID:     "UPI/428919920192/BILL_UTILITY",
+			ReferenceID:     "CARD/428919920192/BILL_UTILITY",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-1 * time.Hour),
-			FormattedAmount: models.FormatRupees(75000),
+			FormattedAmount: models.FormatUSD(7500),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000005",
 			UserID:          "usr_fin_9821",
-			AmountPaise:     1500000, // ₹15,000.00
-			Currency:        "INR",
+			AmountCents:     50000, // $500.00
+			Currency:        "USD",
 			Status:          models.StatusPending,
-			ReferenceID:     "IMPS/2026092400192/VENDOR_PAY",
+			ReferenceID:     "ACH/2026092400192/VENDOR_PAY",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-15 * time.Minute),
-			FormattedAmount: models.FormatRupees(1500000),
+			FormattedAmount: models.FormatUSD(50000),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000006",
 			UserID:          "usr_fin_7718",
-			AmountPaise:     220000, // ₹2,200.00
-			Currency:        "INR",
+			AmountCents:     22000, // $220.00
+			Currency:        "USD",
 			Status:          models.StatusPending,
-			ReferenceID:     "UPI/428901928374/REFUND_ORDER",
+			ReferenceID:     "REFUND/428901928374/REFUND_ORDER",
 			Type:            models.TypeCredit,
 			CreatedAt:       now.Add(-5 * time.Hour),
-			FormattedAmount: models.FormatRupees(220000),
+			FormattedAmount: models.FormatUSD(22000),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000007",
 			UserID:          "usr_fin_5521",
-			AmountPaise:     12500000, // ₹1,25,000.00
-			Currency:        "INR",
+			AmountCents:     320000, // $3,200.00
+			Currency:        "USD",
 			Status:          models.StatusPending,
-			ReferenceID:     "RTGS/R202609240092/EQUITY_DEP",
+			ReferenceID:     "FEDWIRE/F202609240092/EQUITY_DEP",
 			Type:            models.TypeCredit,
 			CreatedAt:       now.Add(-10 * time.Minute),
-			FormattedAmount: models.FormatRupees(12500000),
+			FormattedAmount: models.FormatUSD(320000),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000008",
 			UserID:          "usr_fin_4412",
-			AmountPaise:     49900, // ₹499.00
-			Currency:        "INR",
+			AmountCents:     4999, // $49.99
+			Currency:        "USD",
 			Status:          models.StatusFailed,
 			ReferenceID:     "CARD/AUTH_8910283019",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-6 * time.Hour),
-			FormattedAmount: models.FormatRupees(49900),
+			FormattedAmount: models.FormatUSD(4999),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000009",
 			UserID:          "usr_fin_6634",
-			AmountPaise:     850000, // ₹8,500.00
-			Currency:        "INR",
+			AmountCents:     85000, // $850.00
+			Currency:        "USD",
 			Status:          models.StatusSuccess,
-			ReferenceID:     "UPI/428900192834/LOAN_EMI",
+			ReferenceID:     "ACH/428900192834/LOAN_PAYMENT",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-8 * time.Hour),
-			FormattedAmount: models.FormatRupees(850000),
+			FormattedAmount: models.FormatUSD(85000),
 		},
 		{
 			ID:              "a1029384-b56c-48de-9f12-000000000010",
 			UserID:          "usr_fin_2209",
-			AmountPaise:     187525, // ₹1,875.25
-			Currency:        "INR",
+			AmountCents:     18750, // $187.50
+			Currency:        "USD",
 			Status:          models.StatusSuccess,
-			ReferenceID:     "UPI/428938491029/GROCERY_EXP",
+			ReferenceID:     "CARD/428938491029/SAAS_SUB",
 			Type:            models.TypeDebit,
 			CreatedAt:       now.Add(-12 * time.Hour),
-			FormattedAmount: models.FormatRupees(187525),
+			FormattedAmount: models.FormatUSD(18750),
 		},
 	}
 
@@ -167,14 +167,14 @@ func (r *MemoryTransactionRepository) GetAll(statusFilter string, limit int) ([]
 	defer r.mu.RUnlock()
 
 	var filtered []models.Transaction
-	var totalVolumePaise int64
+	var totalVolumeCents int64
 	var pendingCount, successCount, failedCount int
 
 	targetStatus := strings.ToUpper(strings.TrimSpace(statusFilter))
 
 	for _, tx := range r.transactions {
 		// Calculate summary statistics across all transactions in store
-		totalVolumePaise += tx.AmountPaise
+		totalVolumeCents += tx.AmountCents
 		switch tx.Status {
 		case models.StatusPending:
 			pendingCount++
@@ -197,12 +197,12 @@ func (r *MemoryTransactionRepository) GetAll(statusFilter string, limit int) ([]
 	}
 
 	summary := TransactionSummary{
-		TotalVolumePaise:       totalVolumePaise,
-		TotalVolumeFormatted:   models.FormatRupees(totalVolumePaise),
-		TotalCount:             totalCount,
-		PendingCount:           pendingCount,
-		SuccessCount:           successCount,
-		FailedCount:            failedCount,
+		TotalVolumeCents:      totalVolumeCents,
+		TotalVolumeFormatted:  models.FormatUSD(totalVolumeCents),
+		TotalCount:            totalCount,
+		PendingCount:          pendingCount,
+		SuccessCount:          successCount,
+		FailedCount:           failedCount,
 		SuccessRatePercentage: successRate,
 	}
 

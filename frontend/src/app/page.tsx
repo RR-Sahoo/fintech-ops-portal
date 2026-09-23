@@ -6,13 +6,11 @@ import {
   fetchTransactions,
   reconcileTransaction,
   type Transaction,
-  type TransactionStatus,
 } from "@/lib/api";
 import {
-  IndianRupee,
+  DollarSign,
   AlertTriangle,
   CheckCircle2,
-  XCircle,
   Clock,
   ArrowUpRight,
   ArrowDownLeft,
@@ -129,7 +127,7 @@ export default function DashboardPage() {
             <button
               onClick={() => refetch()}
               disabled={isFetching}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-colors shadow-sm disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
               title="Refresh Transactions"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
@@ -157,7 +155,7 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => setNotification(null)}
-              className="text-xs opacity-75 hover:opacity-100 underline ml-4"
+              className="text-xs opacity-75 hover:opacity-100 underline ml-4 cursor-pointer"
             >
               Dismiss
             </button>
@@ -173,15 +171,15 @@ export default function DashboardPage() {
                 Total Gross Volume
               </p>
               <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
-                <IndianRupee className="w-4 h-4" />
+                <DollarSign className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-4">
               <div className="text-3xl font-extrabold tracking-tight text-white">
-                {summary?.total_volume_formatted || "₹0.00"}
+                {summary?.total_volume_formatted || "$0.00"}
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                {(summary?.total_volume_paise ?? 0).toLocaleString("en-IN")} paise in total throughput
+                {(summary?.total_volume_cents ?? 0).toLocaleString("en-US")} cents in total throughput
               </p>
             </div>
           </div>
@@ -259,7 +257,7 @@ export default function DashboardPage() {
                 <button
                   key={status}
                   onClick={() => setSelectedStatus(status)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     isActive
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                       : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
@@ -284,7 +282,7 @@ export default function DashboardPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
               >
                 Clear
               </button>
@@ -312,7 +310,7 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={() => refetch()}
-                className="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+                className="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer"
               >
                 Retry Connection
               </button>
@@ -352,7 +350,7 @@ export default function DashboardPage() {
                             <span>{tx.id.slice(0, 18)}...</span>
                             <button
                               onClick={() => handleCopy(tx.id)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-slate-400 hover:text-slate-200 rounded"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-slate-400 hover:text-slate-200 rounded cursor-pointer"
                               title="Copy full UUID"
                             >
                               {copiedId === tx.id ? (
@@ -379,7 +377,7 @@ export default function DashboardPage() {
                           {tx.formatted_amount}
                         </div>
                         <div className="text-[10px] text-slate-500">
-                          {tx.amount_paise.toLocaleString("en-IN")} paise
+                          {(tx.amount_cents ?? 0).toLocaleString("en-US")} cents
                         </div>
                       </td>
 
@@ -423,14 +421,14 @@ export default function DashboardPage() {
                       {/* Timestamp */}
                       <td className="px-5 py-4 text-slate-400 whitespace-nowrap">
                         <div>
-                          {new Date(tx.created_at).toLocaleDateString("en-IN", {
+                          {new Date(tx.created_at).toLocaleDateString("en-US", {
                             day: "2-digit",
                             month: "short",
                             year: "numeric",
                           })}
                         </div>
                         <div className="text-[10px] text-slate-500">
-                          {new Date(tx.created_at).toLocaleTimeString("en-IN", {
+                          {new Date(tx.created_at).toLocaleTimeString("en-US", {
                             hour: "2-digit",
                             minute: "2-digit",
                             second: "2-digit",
@@ -444,7 +442,7 @@ export default function DashboardPage() {
                           <button
                             onClick={() => reconcileMutation.mutate(tx.id)}
                             disabled={reconcileMutation.isPending && reconcileMutation.variables === tx.id}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 hover:shadow-amber-500/30 transition-all disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 hover:shadow-amber-500/30 transition-all disabled:opacity-50 cursor-pointer"
                           >
                             {reconcileMutation.isPending && reconcileMutation.variables === tx.id ? (
                               <>

@@ -21,11 +21,11 @@ const (
 )
 
 // Transaction represents a financial transaction model.
-// AmountPaise strictly uses int64 to prevent floating-point precision loss.
+// AmountCents strictly uses int64 to prevent floating-point precision loss.
 type Transaction struct {
 	ID              string    `json:"id"`
 	UserID          string    `json:"user_id"`
-	AmountPaise     int64     `json:"amount_paise"`
+	AmountCents     int64     `json:"amount_cents"`
 	Currency        string    `json:"currency"`
 	Status          string    `json:"status"`
 	ReferenceID     string    `json:"reference_id"`
@@ -35,47 +35,43 @@ type Transaction struct {
 	FormattedAmount string    `json:"formatted_amount"`
 }
 
-// FormatRupees converts an amount in paise (int64) into an Indian Rupee formatted string (e.g. ₹1,250.50).
-// Does not use any floating point operations.
-func FormatRupees(paise int64) string {
-	isNegative := paise < 0
+// FormatUSD converts an amount in cents (int64) into a USD formatted string (e.g. $1,250.50).
+// Pure integer arithmetic without floating-point precision loss.
+func FormatUSD(cents int64) string {
+	isNegative := cents < 0
 	if isNegative {
-		paise = -paise
+		cents = -cents
 	}
-	rupees := paise / 100
-	remainderPaise := paise % 100
+	dollars := cents / 100
+	remainderCents := cents % 100
 
-	rupeesStr := strconv.FormatInt(rupees, 10)
-	var formattedRupees strings.Builder
-	n := len(rupeesStr)
+	dollarsStr := strconv.FormatInt(dollars, 10)
+	var formattedDollars strings.Builder
+	n := len(dollarsStr)
 
+	// Standard thousands grouping for USD: 1,234,567
 	if n <= 3 {
-		formattedRupees.WriteString(rupeesStr)
+		formattedDollars.WriteString(dollarsStr)
 	} else {
-		last3 := rupeesStr[n-3:]
-		remaining := rupeesStr[:n-3]
-
-		var parts []string
-		for len(remaining) > 2 {
-			parts = append([]string{remaining[len(remaining)-2:]}, parts...)
-			remaining = remaining[:len(remaining)-2]
+		pre := n % 3
+		if pre == 0 {
+			pre = 3
 		}
-		if len(remaining) > 0 {
-			parts = append([]string{remaining}, parts...)
+		formattedDollars.WriteString(dollarsStr[:pre])
+		for i := pre; i < n; i += 3 {
+			formattedDollars.WriteString(",")
+			formattedDollars.WriteString(dollarsStr[i : i+3])
 		}
-		formattedRupees.WriteString(strings.Join(parts, ","))
-		formattedRupees.WriteString(",")
-		formattedRupees.WriteString(last3)
 	}
 
-	prefix := "₹"
+	prefix := "$"
 	if isNegative {
-		prefix = "-₹"
+		prefix = "-$"
 	}
-	return fmt.Sprintf("%s%s.%02d", prefix, formattedRupees.String(), remainderPaise)
+	return fmt.Sprintf("%s%s.%02d", prefix, formattedDollars.String(), remainderCents)
 }
 
-// FormattedAmount returns the transaction's formatted amount in rupees.
+// GetFormattedAmount returns the transaction's formatted amount in USD.
 func (t *Transaction) GetFormattedAmount() string {
-	return FormatRupees(t.AmountPaise)
+	return FormatUSD(t.AmountCents)
 }
